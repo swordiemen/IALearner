@@ -63,14 +63,16 @@ public class Tokenizer {
 
 	public List<String> getTokens(File file){
 		StringBuilder sb = new StringBuilder();
+		BufferedReader br;
 		try{
-			BufferedReader br = new BufferedReader(new FileReader(file));
+			br = new BufferedReader(new FileReader(file));
 			String line = br.readLine();
 			
 			while(line != null){
 				sb.append(line);
 				line = br.readLine();
 			}
+			br.close();
 		}catch(IOException e){
 			e.getStackTrace();
 		}
