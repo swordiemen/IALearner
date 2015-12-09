@@ -63,8 +63,12 @@ public class Classifier {
 		c.createCategorie("blogs", new String[] { "F", "M" });
 		c.selectCurrentClass("blogs");
 		for (int i = 1; i < 600; i++) {
+			if(new File("../blogs/F/F-train" + i
+					+ ".txt").exists()){
 			c.train(new File("../blogs/F/F-train" + i + ".txt"), "F");
+			}else{
 			c.train(new File("../blogs/M/M-train" + i + ".txt"), "M");
+			}
 		}
 		System.out.println(c.getClass("F").getTotal());
 		System.out.println(c.getClass("M").getTotal());
