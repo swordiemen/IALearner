@@ -1,0 +1,38 @@
+package classifier;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Classifier {
+	private HashMap<String, List<ClassDictionary>> categories;
+	private String currentCategorie;
+	private Tokenizer tokenizer;
+	public Classifier(){
+		tokenizer = new Tokenizer();
+		
+	}
+	public void selectCurrentClass(String subject){
+		currentCategorie = subject;
+	}
+	public void train(File text,String dicClass){
+		List<String> words = tokenizer.getTokens(text);
+		for(ClassDictionary dictionary: categories.get(currentCategorie)){
+			if(dictionary.getClassName().equals(dicClass)){
+				dictionary.insert(words);
+			}
+		}
+	}
+	public void createClass(String name, String[] classes){
+		List<ClassDictionary> classList = new ArrayList<ClassDictionary>();
+		for(String group : classes){
+			classList.add(new ClassDictionary(group));
+		}
+		categories.put(name, classList);
+	}
+	public static void main(String[] args){
+		
+	}
+	
+}

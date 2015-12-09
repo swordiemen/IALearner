@@ -1,0 +1,21 @@
+package classifier;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Classifier {
+	private HashMap<String, List<ClassDictionary>> categories;
+	private String currentSubject;
+	private Tokenizer tokenizer;
+	public Classifier(){
+		tokenizer = new Tokenizer();
+		
+	}
+	public void selectCurrentClass(String subject){
+		currentSubject = subject;
+	}
+	public void train(String text){
+		ArrayList<String> words = tokenizer.getTokens(text);
+	}
+}
