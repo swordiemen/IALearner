@@ -58,6 +58,7 @@ public class Tokenizer {
 				res.add(word);
 			}
 		}
+		//System.out.println(res.size());
 		return res;
 	}
 
@@ -65,7 +66,9 @@ public class Tokenizer {
 		StringBuilder sb = new StringBuilder();
 		BufferedReader br;
 		try{
+			
 			br = new BufferedReader(new FileReader(file));
+			//System.out.println("Line");
 			String line = br.readLine();
 			
 			while(line != null){
@@ -74,8 +77,10 @@ public class Tokenizer {
 			}
 			br.close();
 		}catch(IOException e){
-			e.getStackTrace();
+			e.printStackTrace();
+			//System.out.println("Error");
 		}
+		//System.out.println(sb.toString());
 		return getTokens(sb.toString());
 	}
 

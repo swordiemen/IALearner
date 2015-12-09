@@ -36,11 +36,13 @@ public class ClassDictionary {
 	public double prob(String word){
 		int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
 		double prob = (double) (occurrence + smoothing) / (getTotal() + dict.size() * smoothing);
+		//System.out.println("Woord: " + word + " prob: " + prob);
 		return /*Math.log(prob) / Math.log(2);*/prob;
 	}
 	
 	public double probSentence(List<String> words){
 		double prob = 0;
+		//System.out.println(words.size());
 		for(String word : words){
 			prob += prob(word);
 		}
