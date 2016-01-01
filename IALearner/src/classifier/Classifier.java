@@ -63,27 +63,30 @@ public class Classifier {
 		c.createCategorie("blogs", new String[] { "F", "M" });
 		c.selectCurrentClass("blogs");
 		for (int i = 1; i < 600; i++) {
-			if(new File("../blogs/F/F-train" + i
+			if(new File("./blogs/F/F-train" + i
 					+ ".txt").exists()){
-			c.train(new File("../blogs/F/F-train" + i + ".txt"), "F");
+			c.train(new File("./blogs/F/F-train" + i + ".txt"), "F");
 			}else{
-			c.train(new File("../blogs/M/M-train" + i + ".txt"), "M");
+			c.train(new File("./blogs/M/M-train" + i + ".txt"), "M");
 			}
 		}
 		System.out.println(c.getClass("F").getTotal());
 		System.out.println(c.getClass("M").getTotal());
 		for (int i = 1; i < 50; i++) {
-			if(new File("../blogs/F/F-test" + i
+			System.out.print("Testing test" + i);
+			if(new File("./blogs/F/F-test" + i
 					+ ".txt").exists()){
-				System.out.println((c.classify(new File("../blogs/F/F-test" + i
+				System.out.print(" (F)\n");
+				System.out.println((c.classify(new File("./blogs/F/F-test" + i
 						+ ".txt"))).equals("F"));
 			}else{
+				System.out.print(" (M)\n");
 				System.out.println(c.classify(
-						new File("../blogs/M/M-test" + i + ".txt"))
+						new File("./blogs/M/M-test" + i + ".txt"))
 						.equals("M"));
 			}
 		}
-		System.out.println(c.classify(new File("../blogs/F/F-test2.txt")));
+		System.out.println(c.classify(new File("./blogs/F/F-test2.txt")));
 	}
 
 }

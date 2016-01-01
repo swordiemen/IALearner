@@ -13,6 +13,7 @@ public class Tokenizer {
 
 	public Tokenizer(){
 		stopwords = new ArrayList<String>();
+		stopwords.add("");
 		initStopWords();
 	}
 
@@ -77,7 +78,7 @@ public class Tokenizer {
 			}
 			br.close();
 		}catch(IOException e){
-			e.printStackTrace();
+			//e.printStackTrace();
 			//System.out.println("Error");
 		}
 		//System.out.println(sb.toString());

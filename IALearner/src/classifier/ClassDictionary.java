@@ -24,15 +24,13 @@ public class ClassDictionary {
 
 	public void insert(List<String> words){
 		for(String word : words){
-			if(!word.equals("")){
-				if(dict.containsKey(word)){
-					dict.put(word, dict.get(word) + 1); 
-				}else{
-					dict.put(word, 1);
-				}
-
-				incTotal();
+			if(dict.containsKey(word)){
+				dict.put(word, dict.get(word) + 1); 
+			}else{
+				dict.put(word, 1);
 			}
+
+			incTotal();
 		}
 	}
 
