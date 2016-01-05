@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.ScrollPane;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.*;
 import javax.swing.plaf.FileChooserUI;
@@ -16,14 +19,15 @@ public class ClassifierGUI extends JFrame {
 	private JPanel buttons;
 	private JLabel[] labels = new JLabel[3];
 	private JTextArea textarea;
+	private Classifier classifier = new Classifier();
 
 	public ClassifierGUI() {
 		super("ClassifierGUI");
 		int classChoice = JOptionPane.showOptionDialog(this, "Choose your class", "class",
-				  JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {
-			      "Mails", "Blogs"}, 2);
-		if(classChoice = 0){
-			classfier.startMails();
+				JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null, new String[] {
+				"Mails", "Blogs"}, 2);
+		if(classChoice == 0){
+			classifier.startMails();
 		}
 		else{
 			classifier.startBlogs();
@@ -43,6 +47,17 @@ public class ClassifierGUI extends JFrame {
 		filechooserAndLabel.setLayout(new BoxLayout(filechooserAndLabel,BoxLayout.Y_AXIS));
 		fileChooser = new JButton("Choose File");
 		fileChooser.setAlignmentX(CENTER_ALIGNMENT);
+		fileChooser.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				int returnval = fc.showOpenDialog(ClassifierGUI.this);
+				if(returnval == JFileChooser.APPROVE_OPTION){
+					File file = fc.getSelectedFile();
+					checkCorrect(classifier.classify(file),file);
+						
+					}
+				}
+			}
+		); 
 		filechooserAndLabel.add(fileChooser);
 		for (int i = 0; i < labels.length; i++) {
 			labels[i] = new JLabel();
@@ -63,8 +78,16 @@ public class ClassifierGUI extends JFrame {
 		buttons.add(button2);
 		add(buttons,BorderLayout.SOUTH);
 	}
+	public void checkCorrect(String result, File file){
+		int classChoice = JOptionPane.showOptionDialog(this, "The result is " + 
+				result + ", is that correct?", "class", JOptionPane.OK_OPTION, 
+				JOptionPane.QUESTION_MESSAGE, null, new String[] {
+				"Yes", "No"}, 2);
+		if(classifier.)
+	}
+	
 	public void chooseClass(){
-		
+
 	}
 	public static void main(String[] args) {
 		new ClassifierGUI().setVisible(true);

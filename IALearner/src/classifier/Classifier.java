@@ -18,7 +18,9 @@ public class Classifier {
 	public void selectCurrentClass(String subject) {
 		currentCategorie = subject;
 	}
-
+	public List<ClassDictionary> getCurrentClasses(){
+		return categories.get(currentCategorie);
+	}
 	public void train(File text, String dicClass) {
 		List<String> words = tokenizer.getTokens(text);
 		for (ClassDictionary dictionary : categories.get(currentCategorie)) {
@@ -58,32 +60,51 @@ public class Classifier {
 		return maxClass;
 	}
 
-	public static void main(String[] args) {
-		Classifier c = new Classifier();
-		c.createCategorie("blogs", new String[] { "F", "M" });
-		c.selectCurrentClass("blogs");
-		for (int i = 1; i < 600; i++) {
-			if(new File("./blogs/F/F-train" + i
-					+ ".txt").exists()){
-			c.train(new File("./blogs/F/F-train" + i + ".txt"), "F");
-			}else{
-			c.train(new File("./blogs/M/M-train" + i + ".txt"), "M");
+	public void startMails() {
+		createCategorie("mails", new String[] { "H", "S" });
+		selectCurrentClass("mails");
+		for(int i = 1; i < 11; i++){
+			File dir = new File("./corpus-mails/corpus/part" + i);
+			File[] directoryListing = dir.listFiles();
+			if (directoryListing != null) {
+				for (File child : directoryListing) {
+					if(child.getName().contains("spmsg")){
+						train(child,"S");
+					}else{
+						train(child,"H");
+					}
+				}
 			}
 		}
+	}
+
+	public void startBlogs() {
+		createCategorie("blogs", new String[] { "F", "M" });
+		selectCurrentClass("blogs");
+		for (int i = 1; i < 600; i++) {
+			if (new File("./blogs/F/F-train" + i + ".txt").exists()) {
+				train(new File("./blogs/F/F-train" + i + ".txt"), "F");
+			} else {
+				train(new File("./blogs/M/M-train" + i + ".txt"), "M");
+			}
+		}
+	}
+
+	public static void main(String[] args) {
+		Classifier c = new Classifier();
+
 		System.out.println(c.getClass("F").getTotal());
 		System.out.println(c.getClass("M").getTotal());
 		for (int i = 1; i < 50; i++) {
 			System.out.print("Testing test" + i);
-			if(new File("./blogs/F/F-test" + i
-					+ ".txt").exists()){
+			if (new File("./blogs/F/F-test" + i + ".txt").exists()) {
 				System.out.print(" (F)\n");
 				System.out.println((c.classify(new File("./blogs/F/F-test" + i
 						+ ".txt"))).equals("F"));
-			}else{
+			} else {
 				System.out.print(" (M)\n");
 				System.out.println(c.classify(
-						new File("./blogs/M/M-test" + i + ".txt"))
-						.equals("M"));
+						new File("./blogs/M/M-test" + i + ".txt")).equals("M"));
 			}
 		}
 		System.out.println(c.classify(new File("./blogs/F/F-test2.txt")));
