@@ -1,13 +1,16 @@
 package classifier;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ClassDictionary {
 	private String className;
 	private HashMap<String, Integer> dict;
 	private int totalLength;
-	private int smoothing;
+	private final int smoothing = 1;
 
 	public ClassDictionary(String name){
 		setClassName(name);
@@ -33,6 +36,26 @@ public class ClassDictionary {
 			incTotal();
 		}
 	}
+	
+	public void insert(Set<String> words){
+		for(String word : words){
+			if(dict.containsKey(word)){
+				dict.put(word, dict.get(word) + 1); 
+			}else{
+				dict.put(word, 1);
+			}
+
+			incTotal();
+		}
+	}
+	
+	public void insert(String word) {
+		if(dict.containsKey(word)){
+			dict.put(word, dict.get(word) + 1);
+		}else{
+			dict.put(word, 1);
+		}
+	}
 
 	public double prob(String word){
 		double prob = 0;
@@ -44,14 +67,25 @@ public class ClassDictionary {
 		return /*Math.log(prob) / Math.log(2);*/prob;
 	}
 
-	public double probSentence(List<String> words){
+	public double probSentence(List<String> argWords){
+		HashSet<String> words = new HashSet<String>(argWords);
+		HashMap<String, Integer> oldDict = deepCopy(getDict());
+		int oldTotal = getTotal();
 		double prob = 0;
 		//System.out.println(words.size());
 		for(String word : words){
-			prob += prob(word);
+//			prob += Math.log(prob(word))/Math.log(2);
+			double logProb = Math.log(prob(word))/Math.log(2);
+			insert(words);
+			double power = prob(word);
+			setDict(oldDict);
+			setTotal(oldTotal);
+			prob += logProb + power;
 		}
 		return prob;
 	}
+
+	
 
 	public String getClassName() {
 		return className;
@@ -62,6 +96,27 @@ public class ClassDictionary {
 	}
 	public HashMap<String, Integer> getDict(){
 		return dict;
+	}
+	
+	public void setDict(HashMap<String, Integer> argDict){
+		dict = argDict;
+	}
+	
+	public void setTotal(int argTotal){
+		totalLength = argTotal;
+	}
+	
+	/**
+	 * Creates a deep copy of a given map.
+	 * @param map The map that gets copied
+	 * @return A deep copy of <code>map</code>
+	 */
+	public <K, V> HashMap<K, V> deepCopy(HashMap<K, V> map){
+		HashMap<K, V> resultMap = new HashMap<K, V>();
+		for(K k : map.keySet()){
+			resultMap.put(k, map.get(k));
+		}
+		return resultMap;
 	}
 
 

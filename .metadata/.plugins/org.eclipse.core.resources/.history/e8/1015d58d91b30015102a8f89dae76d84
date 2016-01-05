@@ -1,0 +1,58 @@
+package classifier;
+
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+
+import javax.swing.*;
+import javax.swing.plaf.FileChooserUI;
+
+public class ClassifierGUI extends JFrame {
+	final JFileChooser fc = new JFileChooser();
+	private JButton button1;
+	private JButton button2;
+	private JButton fileChooser;
+	private JPanel buttons;
+	private JLabel[] labels = new JLabel[3];
+	private JTextArea textarea;
+
+	public ClassifierGUI() {
+		super("ClassifierGUI");
+		setSize(600, 600);
+		setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		init();
+	}
+
+	public void init() {
+		button1 = new JButton("Train");
+		button2 = new JButton("Test");
+		buttons = new JPanel();
+		buttons.setLayout(new FlowLayout());
+		fileChooser = new JButton("Choose File");
+		
+		add(fileChooser);
+		for (int i = 0; i < labels.length; i++) {
+			labels[i] = new JLabel();
+			// frame.add(labels[i]);
+		}
+
+		labels[0].setText("OR: Enter a classifiable sentence");
+		add(labels[0]);
+		JPanel item = new JPanel(new BorderLayout());
+		textarea = new JTextArea(2, 5);
+		item.add(textarea, BorderLayout.CENTER);
+		item.setSize(600, 200);
+		add(item);
+		System.out.println(textarea.getRows());
+		textarea.setText("Test");
+		buttons.add(button1);
+		System.out.println(button2.getLocation().y);
+		System.out.println(button2.getSize().height);
+		buttons.add(button2);
+		add(buttons);
+	}
+
+	public static void main(String[] args) {
+		new ClassifierGUI().setVisible(true);
+	}
+}
