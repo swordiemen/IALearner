@@ -6,7 +6,11 @@ import java.awt.FlowLayout;
 import java.awt.ScrollPane;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
@@ -34,11 +38,13 @@ public class ClassifierGUI extends JFrame implements Constants {
 		int classChoice = JOptionPane.showOptionDialog(this,
 				"Choose your class", "class", JOptionPane.OK_OPTION,
 				JOptionPane.QUESTION_MESSAGE, null, new String[] { "Mails",
-						"Blogs" }, 2);
+						"Blogs", "Objective/Subjective (test)" }, 2);
 		if (classChoice == 0) {
 			classifier.startMails();
-		} else {
+		} else if(classChoice == 1) {
 			classifier.startBlogs();
+		} else{
+			classifier.startTest();
 		}
 		setSize(600, 300);
 		setLayout(new BorderLayout());
@@ -118,61 +124,55 @@ public class ClassifierGUI extends JFrame implements Constants {
 		if (classifier.getCurrentClassName().equals("mails")) {
 			directory = dots + "/corpus-mails/corpus/TrainFiles/";
 		} else if (classifier.getCurrentClassName().equals("blogs")) {
-			directory = dots + "/blogs/TrainFiles/";
+			directory = dots + "/blogs/";
+		} else if(classifier.getCurrentClassName().equals("objsub")){
+			directory = dots + "/testcorpus/";
 		}
 		String filename = "";
 		if (!directory.equals("")) {
-			if (classifier.getCurrentClasses().get(0).getClassName()
-					.equals(result)) {
-				if (classChoice == 0) {
-					filename = directory
-							+ classifier.getCurrentClasses().get(0)
-									.getFileName()
-							+ (int) (Math.random() * 1000) + ".txt";
-
-				} else {
-					filename = directory
-							+ classifier.getCurrentClasses().get(1)
-									.getFileName()
-							+ (int) (Math.random() * 1000) + ".txt";
-					getCorrectClassFromUser(fc.getSelectedFile());
-				}
-			} else {
-				if (classChoice == 0) {
-					filename = directory
-							+ classifier.getCurrentClasses().get(1)
-									.getFileName() + (int) Math.random() * 1000
-							+ ".txt";
-				} else {
-					filename = directory
-							+ classifier.getCurrentClasses().get(0)
-									.getFileName() + (int) Math.random() * 1000
-							+ ".txt";
-					getCorrectClassFromUser(fc.getSelectedFile());
-				}
+			ClassDictionary res = classifier.getClass(result);
+			if(classChoice == 0){ //user clicked 'yes'
+				filename = directory +
+						res.getClassName() +
+						"IA.txt"; //<className>IA.txt -- all the things learned are saved in this file.
+			}else{ //user clicked 'no'
+				filename = directory +
+						classifier.getCurrentClasses().get(getCorrectClassFromUser(fc.getSelectedFile())).getClassName()
+						+ "IA.txt";
 			}
 		}
 		try {
 			if (!filename.equals("")) {
-				if (new File(filename).createNewFile()) {
-					PrintWriter writer = new PrintWriter(filename, "UTF-8");
-					writer.print(readFile(file.getAbsolutePath(),
-							StandardCharsets.UTF_8));
-					System.out.println("the File"
-							+ readFile(file.getAbsolutePath(),
-									StandardCharsets.UTF_8));
-					writer.close();
-				} else {
-					System.err.println("Error: File name is empty.");
+				File infoFile = new File(filename);
+				if(!infoFile.exists()){
+					infoFile.createNewFile();
 				}
+				BufferedReader br;
+				br = new BufferedReader(new FileReader(infoFile));
+				String oldInfo = "";
+				String line = br.readLine();
+
+				while(line != null){
+					oldInfo += line;
+					line = br.readLine();
+				}
+				br.close();
+				
+				Tokenizer tok = new Tokenizer();
+				for(String token : tok.getTokens(fc.getSelectedFile())){
+					oldInfo += " " + token;
+				}
+				BufferedWriter bw;
+				bw = new BufferedWriter(new FileWriter(infoFile));
+				bw.write(oldInfo);
+				bw.close();
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void getCorrectClassFromUser(File file){
+	public int getCorrectClassFromUser(File file){
 		List<ClassDictionary> classList = classifier.getCurrentClasses();
 		String[] classStringList = new String[classList.size() + 1]; //+1 for a possible new class
 		for(int i = 0; i < classStringList.length - 1; i++){
@@ -190,6 +190,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 			String newName = JOptionPane.showInputDialog("New class name:");
 			classifier.createClass(newName);
 		}
+		return classChoice;
 	}
 
 	static String readFile(String path, Charset encoding) throws IOException {

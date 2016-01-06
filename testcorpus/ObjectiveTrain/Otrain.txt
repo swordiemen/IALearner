@@ -1,0 +1,51 @@
+list    
+record
+underline
+state	define	arrange
+name	relate	describe
+tell	recall	memorize
+recall	repeat	recognize
+label	select	reproduce
+explain
+describe
+report
+translate	express	summarize
+identify	classify	discuss
+restate	locate	compare
+discuss	review	illustrate
+tell	critique	estimate
+reference	interpret	reiterate
+
+apply  
+sketch
+perform
+use	solve	respond
+practice	construct	role-play
+demonstrate	conduct	execute
+complete	dramatize	employ
+analyze  
+inspect
+test
+distinguish	categorize	critique
+differentiate	catalogue	diagnose
+appraise	quantify	extrapolate
+calculate	measure	theorize
+experiment	relate	debate
+
+develop 
+revise
+compose
+plan	formulate	collect
+build	propose	construct
+create	establish	prepare
+design	integrate	devise
+organize	modify	manage
+
+review 
+appraise
+choose
+justify	argue	conclude
+assess	rate	compare
+defend	score	evaluate
+report on	select	interpret
+investigate	measure	support
