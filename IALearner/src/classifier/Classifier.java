@@ -6,7 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Classifier implements Constants {
-	private HashMap<String, List<ClassDictionary>> categories;
+	private HashMap<String, List<ClassDictionary>> categories; //map of (category name), [classes]
 	private String currentCategorie;
 	private Tokenizer tokenizer;
 	private String dots = DOTS; //can be 1 dot or 2 dots depending on your system.
@@ -37,6 +37,13 @@ public class Classifier implements Constants {
 			classList.add(new ClassDictionary(group));
 		}
 		categories.put(name, classList);
+	}
+	
+	public void createClass(String name){
+		ClassDictionary cd = new ClassDictionary(name);
+		List<ClassDictionary> classList = categories.get(currentCategorie);
+		classList.add(cd);
+		categories.put(currentCategorie, classList);
 	}
 
 	public ClassDictionary getClass(String className) {

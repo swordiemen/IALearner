@@ -116,11 +116,44 @@ public class ClassifierGUI extends JFrame implements Constants {
 				JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 				classifier.getCurrentClassNameArray(), 2);
 		String filename = "";
-
+<<<<<<< HEAD
 		filename = classifier.getCurrentClasses().get(classChoice)
 				.getDirectory()
 				+ classifier.getCurrentClasses().get(classChoice).getFileName()
 				+ ((int) Math.random() * 1000) + ".txt";
+=======
+		if (!directory.equals("")) {
+			if (classifier.getCurrentClasses().get(0).getClassName()
+					.equals(result)) {
+				if (classChoice == 0) {
+					filename = directory
+							+ classifier.getCurrentClasses().get(0)
+									.getFileName()
+							+ (int) (Math.random() * 1000) + ".txt";
+
+				} else {
+					filename = directory
+							+ classifier.getCurrentClasses().get(1)
+									.getFileName()
+							+ (int) (Math.random() * 1000) + ".txt";
+					getCorrectClassFromUser(fc.getSelectedFile());
+				}
+			} else {
+				if (classChoice == 0) {
+					filename = directory
+							+ classifier.getCurrentClasses().get(1)
+									.getFileName() + (int) Math.random() * 1000
+							+ ".txt";
+				} else {
+					filename = directory
+							+ classifier.getCurrentClasses().get(0)
+									.getFileName() + (int) Math.random() * 1000
+							+ ".txt";
+					getCorrectClassFromUser(fc.getSelectedFile());
+				}
+			}
+		}
+>>>>>>> dc636699c7f95815cd746e489960639adfb9bbec
 		try {
 			if (!filename.equals("")) {
 				if (new File(filename).createNewFile()) {
