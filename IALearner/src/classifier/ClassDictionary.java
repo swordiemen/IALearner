@@ -11,7 +11,13 @@ public class ClassDictionary {
 	private HashMap<String, Integer> dict;
 	private int totalLength;
 	private final int smoothing = 1;
+	private String filename;
 
+	public ClassDictionary(String name, String filenameArg){
+		setClassName(name);
+		filename = filenameArg;
+		dict = new HashMap<String, Integer>();
+	}
 	public ClassDictionary(String name){
 		setClassName(name);
 		dict = new HashMap<String, Integer>();
@@ -56,6 +62,9 @@ public class ClassDictionary {
 			dict.put(word, 1);
 		}
 	}
+	public void setFileName(String name){
+		filename = name;
+	}
 
 	public double prob(String word){
 		double prob = 0;
@@ -85,7 +94,9 @@ public class ClassDictionary {
 		return prob;
 	}
 
-	
+	public String getFileName(){
+		return filename;
+	}
 
 	public String getClassName() {
 		return className;

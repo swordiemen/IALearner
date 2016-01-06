@@ -9,7 +9,7 @@ public class Classifier {
 	private HashMap<String, List<ClassDictionary>> categories;
 	private String currentCategorie;
 	private Tokenizer tokenizer;
-	private String punten = "."; //can be 1 dot or 2 dots depending on your system.
+	private String punten = ".."; //can be 1 dot or 2 dots depending on your system.
 
 	public Classifier() {
 		tokenizer = new Tokenizer();
@@ -64,9 +64,11 @@ public class Classifier {
 
 	public void startMails() {
 		createCategorie("mails", new String[] { "H", "S" });
+		categories.get("mails").get(0).setFileName("msg");
+		categories.get("mails").get(0).setFileName("spmsg");
 		selectCurrentClass("mails");
 		for(int i = 1; i < 11; i++){
-			File dir = new File("./corpus-mails/corpus/part" + i);
+			File dir = new File(punten + "/corpus-mails/corpus/part" + i);
 			File[] directoryListing = dir.listFiles();
 			if (directoryListing != null) {
 				for (File child : directoryListing) {
@@ -78,16 +80,39 @@ public class Classifier {
 				}
 			}
 		}
+		//if((new File("../corpus-mails/corpus/TrainFiles")).listFiles()!=null){
+			for(File f: (new File(punten + "/corpus-mails/corpus/TrainFiles")).listFiles()){
+				if(f.getName().contains("spmsg")){
+					train(f,"S");
+				}
+				else{
+					train(f,"H");
+				}
+			}
+		//}
+	}
+	public String getCurrentClassName(){
+		return currentCategorie;
 	}
 
 	public void startBlogs() {
 		createCategorie("blogs", new String[] { "F", "M" });
 		selectCurrentClass("blogs");
+		categories.get("blogs").get(0).setFileName("F");
+		categories.get("blogs").get(1).setFileName("M");
 		for (int i = 1; i < 600; i++) {
 			if (new File("./blogs/F/F-train" + i + ".txt").exists()) {
-				train(new File("./blogs/F/F-train" + i + ".txt"), "F");
+				train(new File(punten + "/blogs/F/F-train" + i + ".txt"), "F");
 			} else {
-				train(new File("./blogs/M/M-train" + i + ".txt"), "M");
+				train(new File(punten + "/blogs/M/M-train" + i + ".txt"), "M");
+			}
+		}
+		for(File f: (new File(punten + "/blogs/TrainFiles")).listFiles()){
+			if(f.getName().contains("F")){
+				train(f,"F");
+			}
+			else{
+				train(f,"M");
 			}
 		}
 	}
