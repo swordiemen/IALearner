@@ -13,20 +13,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.swing.*;
 import javax.swing.plaf.FileChooserUI;
 
 public class ClassifierGUI extends JFrame implements Constants {
 	final JFileChooser fc = new JFileChooser();
-	private JButton button1;
-	private JButton button2;
+	private JButton trainButton;
+	private JButton testButton;
 	private JButton fileChooser;
 	private JPanel buttons;
 	private JLabel[] labels = new JLabel[3];
 	private Classifier classifier = new Classifier();
 	private final String dots = DOTS;
-	private boolean FileSelected = false;
+	private boolean fileSelected = false;
 
 	public ClassifierGUI() {
 		super("ClassifierGUI");
@@ -46,8 +47,8 @@ public class ClassifierGUI extends JFrame implements Constants {
 	}
 
 	public void init() {
-		button1 = new JButton("Train");
-		button2 = new JButton("Test");
+		trainButton = new JButton("Train");
+		testButton = new JButton("Test");
 		buttons = new JPanel();
 		buttons.setLayout(new FlowLayout());
 		JPanel filechooserAndLabel = new JPanel();
@@ -59,7 +60,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 			public void actionPerformed(ActionEvent e) {
 				int returnval = fc.showOpenDialog(ClassifierGUI.this);
 				if (returnval == JFileChooser.APPROVE_OPTION) {
-					FileSelected = true;
+					fileSelected = true;
 				}
 			}
 		});
@@ -70,11 +71,11 @@ public class ClassifierGUI extends JFrame implements Constants {
 		}
 		labels[0].setText("Select a file and press train or test.");
 		labels[0].setAlignmentX(CENTER_ALIGNMENT);
-		button1.addActionListener(new ActionListener() {
+		trainButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (FileSelected) {
+				if (fileSelected) {
 					File file = fc.getSelectedFile();
 					checkCorrect(classifier.classify(file), file);
 
@@ -83,11 +84,11 @@ public class ClassifierGUI extends JFrame implements Constants {
 				}
 			}
 		});
-		button2.addActionListener(new ActionListener() {
+		testButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				if (FileSelected) {
+				if (fileSelected) {
 					String result = classifier.classify(fc.getSelectedFile());
 					int correctAnswer = JOptionPane.showOptionDialog(
 							ClassifierGUI.this, "The classifier thinks it is: "
@@ -101,10 +102,10 @@ public class ClassifierGUI extends JFrame implements Constants {
 		});
 		filechooserAndLabel.add(labels[0]);
 		add(filechooserAndLabel, BorderLayout.NORTH);
-		buttons.add(button1);
-		System.out.println(button2.getLocation().y);
-		System.out.println(button2.getSize().height);
-		buttons.add(button2);
+		buttons.add(trainButton);
+		System.out.println(testButton.getLocation().y);
+		System.out.println(testButton.getSize().height);
+		buttons.add(testButton);
 		add(buttons, BorderLayout.SOUTH);
 	}
 
@@ -134,6 +135,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 							+ classifier.getCurrentClasses().get(1)
 									.getFileName()
 							+ (int) (Math.random() * 1000) + ".txt";
+					getCorrectClassFromUser(fc.getSelectedFile());
 				}
 			} else {
 				if (classChoice == 0) {
@@ -146,6 +148,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 							+ classifier.getCurrentClasses().get(0)
 									.getFileName() + (int) Math.random() * 1000
 							+ ".txt";
+					getCorrectClassFromUser(fc.getSelectedFile());
 				}
 			}
 		}
@@ -166,6 +169,26 @@ public class ClassifierGUI extends JFrame implements Constants {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	public void getCorrectClassFromUser(File file){
+		List<ClassDictionary> classList = classifier.getCurrentClasses();
+		String[] classStringList = new String[classList.size() + 1]; //+1 for a possible new class
+		for(int i = 0; i < classStringList.length - 1; i++){
+			classStringList[i] = classList.get(i).getClassName();
+		}
+		classStringList[classStringList.length - 1] = "Make new class";
+		Tokenizer tokenizer = new Tokenizer();
+		List<String> tokens = tokenizer.getTokens(file);
+		int classChoice = JOptionPane.showOptionDialog(this, "What class should it belong to?", "class",
+				JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+				classStringList, 2);
+		if(classChoice < classStringList.length - 1){
+			classList.get(classChoice).insert(tokens);
+		}else{
+			String newName = JOptionPane.showInputDialog("New class name:");
+			classifier.createClass(newName);
 		}
 	}
 
