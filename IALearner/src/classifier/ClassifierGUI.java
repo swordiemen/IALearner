@@ -68,7 +68,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 			labels[i] = new JLabel();
 			// frame.add(labels[i]);
 		}
-		labels[0].setText("Select a file and press train of test.");
+		labels[0].setText("Select a file and press train or test.");
 		labels[0].setAlignmentX(CENTER_ALIGNMENT);
 		button1.addActionListener(new ActionListener() {
 
