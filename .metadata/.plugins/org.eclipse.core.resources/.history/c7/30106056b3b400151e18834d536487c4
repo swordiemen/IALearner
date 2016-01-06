@@ -73,12 +73,12 @@ public class Classifier implements Constants {
 
 	public void startMails() {
 		createCategorie("mails", new String[] { "H", "S" });
-		selectCurrentClass("mails");
 		categories.get("mails").get(0).setFileName("msg");
 		categories.get("mails").get(1).setFileName("spmsg");
 		categories.get("mails").get(0).setDirectory(dots + "/corpus-mails/corpus/TrainFiles");
-		categories.get("mails").get(1).setDirectory(dots + "/corpus-mails/corpus/TrainFiles");
-		for(int i = 1; i < 10; i++){
+		categories.get("mails").get(0).setDirectory(dots + "/corpus-mails/corpus/TrainFiles");
+		selectCurrentClass("mails");
+		for(int i = 1; i < 11; i++){
 			File dir = new File(dots + "/corpus-mails/corpus/part" + i);
 			File[] directoryListing = dir.listFiles();
 			if (directoryListing != null) {
@@ -91,7 +91,7 @@ public class Classifier implements Constants {
 				}
 			}
 		}
-		if((new File("../corpus-mails/corpus/TrainFiles")).listFiles()!=null){
+		//if((new File("../corpus-mails/corpus/TrainFiles")).listFiles()!=null){
 			for(File f: (new File(dots + "/corpus-mails/corpus/TrainFiles")).listFiles()){
 				if(f.getName().contains("spmsg")){
 					train(f,"S");
@@ -100,7 +100,7 @@ public class Classifier implements Constants {
 					train(f,"H");
 				}
 			}
-		}
+		//}
 	}
 	public String getCurrentClassName(){
 		return currentCategorie;
@@ -114,14 +114,14 @@ public class Classifier implements Constants {
 		categories.get("blogs").get(0).setDirectory(dots + "/blogs/TrainFiles/");
 		categories.get("blogs").get(1).setDirectory(dots + "/blogs/TrainFiles/");
 		for(File f: (new File(dots + "/blogs/M")).listFiles()){
-			if(f.getName().contains("train")){
+			//if(f.getName().contains("train")){
 				train(f,"M");
-			}
+			//}
 		}
 		for(File f: (new File(dots + "/blogs/F")).listFiles()){
-			if(f.getName().contains("train")){
+			//if(f.getName().contains("train")){
 				train(f,"F");
-			}
+			//}
 		}
 		for(File f: (new File(dots + "/blogs/TrainFiles")).listFiles()){
 			if(f.getName().contains("F")){
@@ -170,22 +170,6 @@ public class Classifier implements Constants {
 		//System.out.println(c.classify(new File(dots + "/blogs/F/F-test2.txt")));
 		System.out.println(c.classify(new File(dots + "/blogs/test.txt")));
 		System.out.println("Succeeds: " + succeeds + " of 49, of which " + f + " were f");
-		c.startMails();
-		int correct = 0;
-		File[] fileList = (new File(dots + "/corpus-mails/corpus/part10").listFiles()); 
-		for(File file : fileList){
-			if(c.classify(file).equals("S")){
-				if(file.getName().contains("spmsg")){
-					correct++;
-				}
-			}
-			else{
-				if(!file.getName().contains("spmsg")){
-					correct++;
-				}
-			}
-		}
-		System.out.println(correct + " of the " + fileList.length + " correct!"  );
 	}
-	
+
 }

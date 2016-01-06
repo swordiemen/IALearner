@@ -94,7 +94,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 									+ result, "class", JOptionPane.OK_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null,
 							new String[] { "OK" }, 2);
-				} else {
+				}else{
 					labels[0].setText("No file selected.");
 				}
 			}
@@ -111,14 +111,44 @@ public class ClassifierGUI extends JFrame implements Constants {
 	public void checkCorrect(String result, File file) {
 		String directory = "";
 		int classChoice = JOptionPane.showOptionDialog(this, "The result is "
-				+ result + ", select the correct result.", "class",
+				+ result + ", is that correct?", "class",
 				JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null,
-				classifier.getCurrentClassNameArray(), 2);
+				new String[] { "Yes", "No" }, 2);
+		if (classifier.getCurrentClassName().equals("mails")) {
+			directory = dots + "/corpus-mails/corpus/TrainFiles/";
+		} else if (classifier.getCurrentClassName().equals("blogs")) {
+			directory = dots + "/blogs/TrainFiles/";
+		}
 		String filename = "";
-		filename = classifier.getCurrentClasses().get(classChoice)
-				.getDirectory()
-				+ classifier.getCurrentClasses().get(classChoice).getFileName()
-				+ ((int) Math.random() * 1000) + ".txt";
+		if (!directory.equals("")) {
+			if (classifier.getCurrentClasses().get(0).getClassName()
+					.equals(result)) {
+				if (classChoice == 0) {
+					filename = directory
+							+ classifier.getCurrentClasses().get(0)
+									.getFileName()
+							+ (int) (Math.random() * 1000) + ".txt";
+					classifier.train(file, classifier.getCurrentClasses().get(0).getClassName());
+				} else {
+					filename = directory
+							+ classifier.getCurrentClasses().get(1)
+									.getFileName()
+							+ (int) (Math.random() * 1000) + ".txt";
+				}
+			} else {
+				if (classChoice == 0) {
+					filename = directory
+							+ classifier.getCurrentClasses().get(1)
+									.getFileName() + (int) Math.random() * 1000
+							+ ".txt";
+				} else {
+					filename = directory
+							+ classifier.getCurrentClasses().get(0)
+									.getFileName() + (int) Math.random() * 1000
+							+ ".txt";
+				}
+			}
+		}
 		try {
 			if (!filename.equals("")) {
 				if (new File(filename).createNewFile()) {

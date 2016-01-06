@@ -94,7 +94,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 									+ result, "class", JOptionPane.OK_OPTION,
 							JOptionPane.QUESTION_MESSAGE, null,
 							new String[] { "OK" }, 2);
-				} else {
+				}else{
 					labels[0].setText("No file selected.");
 				}
 			}
@@ -115,10 +115,7 @@ public class ClassifierGUI extends JFrame implements Constants {
 				JOptionPane.OK_OPTION, JOptionPane.QUESTION_MESSAGE, null,
 				classifier.getCurrentClassNameArray(), 2);
 		String filename = "";
-		filename = classifier.getCurrentClasses().get(classChoice)
-				.getDirectory()
-				+ classifier.getCurrentClasses().get(classChoice).getFileName()
-				+ ((int) Math.random() * 1000) + ".txt";
+		
 		try {
 			if (!filename.equals("")) {
 				if (new File(filename).createNewFile()) {

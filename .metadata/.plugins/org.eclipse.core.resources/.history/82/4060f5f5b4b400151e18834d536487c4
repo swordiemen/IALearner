@@ -185,7 +185,7 @@ public class Classifier implements Constants {
 				}
 			}
 		}
-		System.out.println(correct + " of the " + fileList.length + " correct!"  );
+		System.out.println(correct + );
 	}
 	
 }
