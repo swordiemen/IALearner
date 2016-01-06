@@ -1,8 +1,10 @@
 package classifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +14,6 @@ public class ClassDictionary implements Constants {
 	private int totalLength;
 	private final int smoothing = 1; //laplace
 	private String filename;
-	private String directory;
 
 	public ClassDictionary(String name, String filenameArg){
 		setClassName(name);
@@ -75,6 +76,7 @@ public class ClassDictionary implements Constants {
 		double prob = 0;
 		if(!word.equals("")){
 			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
+			int total = 0;
 			prob = (double) (occurrence + smoothing) / getTotal();
 			//System.out.println("Woord: " + word + " prob: " + prob);
 		}
@@ -117,12 +119,6 @@ public class ClassDictionary implements Constants {
 
 	public String getFileName(){
 		return filename;
-	}
-	public void setDirectory(String directoryArg){
-		directory=directoryArg;
-	}
-	public String getDirectory(){
-		return directory;
 	}
 	public void printTopTen(){
 		List<Integer> values = new ArrayList<Integer>(dict.values()); 

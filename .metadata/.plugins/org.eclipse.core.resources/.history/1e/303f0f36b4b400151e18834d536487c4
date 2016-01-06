@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Classifier implements Constants {
-	private HashMap<String, List<ClassDictionary>> categories; //map of (category name), [classes]
-	private String currentCategory;
+	private HashMap<String, List<ClassDictionary>> categories;
+	private String currentCategorie;
 	private Tokenizer tokenizer;
 	private String dots = DOTS; //can be 1 dot or 2 dots depending on your system.
 
@@ -16,15 +16,15 @@ public class Classifier implements Constants {
 		categories = new HashMap<String, List<ClassDictionary>>();
 	}
 
-	public void selectCurrentCategory(String subject) {
-		currentCategory = subject;
+	public void selectCurrentClass(String subject) {
+		currentCategorie = subject;
 	}
 	public List<ClassDictionary> getCurrentClasses(){
-		return categories.get(currentCategory);
+		return categories.get(currentCategorie);
 	}
 	public void train(File text, String dicClass) {
 		List<String> words = tokenizer.getTokens(text);
-		for (ClassDictionary dictionary : categories.get(currentCategory)) {
+		for (ClassDictionary dictionary : categories.get(currentCategorie)) {
 			if (dictionary.getClassName().equals(dicClass)) {
 				dictionary.insert(words);
 			}
@@ -39,15 +39,8 @@ public class Classifier implements Constants {
 		categories.put(name, classList);
 	}
 
-	public void createClass(String name){
-		ClassDictionary cd = new ClassDictionary(name);
-		List<ClassDictionary> classList = categories.get(currentCategory);
-		classList.add(cd);
-		categories.put(currentCategory, classList);
-	}
-
 	public ClassDictionary getClass(String className) {
-		for (ClassDictionary classes : categories.get(currentCategory)) {
+		for (ClassDictionary classes : categories.get(currentCategorie)) {
 			if (classes.getClassName().equals(className)) {
 				return classes;
 			}
@@ -55,9 +48,9 @@ public class Classifier implements Constants {
 		return null;
 	}
 	public String[] getCurrentClassNameArray(){
-		String[] result = new String[categories.get(currentCategory).size()];
+		String[] result = new String[categories.get(currentCategorie).size()];
 		int i = 0;
-		for(ClassDictionary cDic:categories.get(currentCategory)){
+		for(ClassDictionary cDic:categories.get(currentCategorie)){
 			result[i] = cDic.getClassName();
 			i++;
 		}
@@ -67,7 +60,7 @@ public class Classifier implements Constants {
 	public String classify(File f) {
 		double maxProbe = Double.NEGATIVE_INFINITY;
 		String maxClass = "";
-		for (ClassDictionary dictionary : categories.get(currentCategory)) {
+		for (ClassDictionary dictionary : categories.get(currentCategorie)) {
 			double prob = dictionary.probSentence(tokenizer.getTokens(f));
 			System.out.println("ProbSentence for " + dictionary.getClassName() + ": " + prob);
 			if (prob > maxProbe) {
@@ -80,13 +73,12 @@ public class Classifier implements Constants {
 
 	public void startMails() {
 		createCategorie("mails", new String[] { "H", "S" });
-		selectCurrentCategory("mails");
 		categories.get("mails").get(0).setFileName("msg");
 		categories.get("mails").get(1).setFileName("spmsg");
 		categories.get("mails").get(0).setDirectory(dots + "/corpus-mails/corpus/TrainFiles");
 		categories.get("mails").get(1).setDirectory(dots + "/corpus-mails/corpus/TrainFiles");
+		selectCurrentClass("mails");
 		for(int i = 1; i < 10; i++){
-
 			File dir = new File(dots + "/corpus-mails/corpus/part" + i);
 			File[] directoryListing = dir.listFiles();
 			if (directoryListing != null) {
@@ -108,40 +100,15 @@ public class Classifier implements Constants {
 					train(f,"H");
 				}
 			}
-		}else{
-			for(int i = 1; i <= 9; i++){
-				for(File f: (new File(dots + "/corpus-mails/corpus/part" + i)).listFiles()){
-					if(f.getName().contains("spmsg")){
-						train(f,"S");
-					}
-					else{
-						train(f,"H");
-					}
-				}
-			}
 		}
 	}
-
 	public String getCurrentClassName(){
-		return currentCategory;
-	}
-
-	public void startTest() {
-		createCategorie("objsub", new String[] { "O", "S"});
-		selectCurrentCategory("objsub");
-		categories.get("objsub").get(0).setFileName("O");
-		categories.get("objsub").get(1).setFileName("S");
-		for(File f: (new File(dots + "/testcorpus/ObjectiveTrain").listFiles())){
-			train(f, "O");
-		}
-		for(File f: (new File(dots + "/testcorpus/SubjectiveTrain").listFiles())){
-			train(f, "S");
-		}
+		return currentCategorie;
 	}
 
 	public void startBlogs() {
 		createCategorie("blogs", new String[] { "F", "M" });
-		selectCurrentCategory("blogs");
+		selectCurrentClass("blogs");
 		categories.get("blogs").get(0).setFileName("F");
 		categories.get("blogs").get(1).setFileName("M");
 		categories.get("blogs").get(0).setDirectory(dots + "/blogs/TrainFiles/");
@@ -203,21 +170,6 @@ public class Classifier implements Constants {
 		//System.out.println(c.classify(new File(dots + "/blogs/F/F-test2.txt")));
 		System.out.println(c.classify(new File(dots + "/blogs/test.txt")));
 		System.out.println("Succeeds: " + succeeds + " of 49, of which " + f + " were f");
-		c.startMails();
-		int correct = 0;
-		File[] fileList = (new File(dots + "/corpus-mails/corpus/part10").listFiles()); 
-		for(File file : fileList){
-			if(c.classify(file).equals("S")){
-				if(file.getName().contains("spmsg")){
-					correct++;
-				}
-			}
-			else{
-				if(!file.getName().contains("spmsg")){
-					correct++;
-				}
-			}
-		}
-		System.out.println(correct + " of the " + fileList.length + " correct!"  );
 	}
+
 }
