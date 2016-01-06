@@ -1,0 +1,159 @@
+package classifier;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+public class Classifier implements Constants {
+	private HashMap<String, List<ClassDictionary>> categories;
+	private String currentCategorie;
+	private Tokenizer tokenizer;
+	private String dots = DOTS; //can be 1 dot or 2 dots depending on your system.
+
+	public Classifier() {
+		tokenizer = new Tokenizer();
+		categories = new HashMap<String, List<ClassDictionary>>();
+	}
+
+	public void selectCurrentClass(String subject) {
+		currentCategorie = subject;
+	}
+	public List<ClassDictionary> getCurrentClasses(){
+		return categories.get(currentCategorie);
+	}
+	public void train(File text, String dicClass) {
+		List<String> words = tokenizer.getTokens(text);
+		for (ClassDictionary dictionary : categories.get(currentCategorie)) {
+			if (dictionary.getClassName().equals(dicClass)) {
+				dictionary.insert(words);
+			}
+		}
+	}
+
+	public void createCategorie(String name, String[] classes) {
+		List<ClassDictionary> classList = new ArrayList<ClassDictionary>();
+		for (String group : classes) {
+			classList.add(new ClassDictionary(group));
+		}
+		categories.put(name, classList);
+	}
+
+	public ClassDictionary getClass(String className) {
+		for (ClassDictionary classes : categories.get(currentCategorie)) {
+			if (classes.getClassName().equals(className)) {
+				return classes;
+			}
+		}
+		return null;
+	}
+
+	public String classify(File f) {
+		double maxProbe = Double.NEGATIVE_INFINITY;
+		String maxClass = "";
+		for (ClassDictionary dictionary : categories.get(currentCategorie)) {
+			double prob = dictionary.probSentence(tokenizer.getTokens(f));
+			System.out.println("ProbSentence for " + dictionary.getClassName() + ": " + prob);
+			if (prob > maxProbe) {
+				maxProbe = prob;
+				maxClass = dictionary.getClassName();
+			}
+		}
+		return maxClass;
+	}
+
+	public void startMails() {
+		createCategorie("mails", new String[] { "H", "S" });
+		categories.get("mails").get(0).setFileName("msg");
+		categories.get("mails").get(0).setFileName("spmsg");
+		selectCurrentClass("mails");
+		for(int i = 1; i < 11; i++){
+			File dir = new File(dots + "/corpus-mails/corpus/part" + i);
+			File[] directoryListing = dir.listFiles();
+			if (directoryListing != null) {
+				for (File child : directoryListing) {
+					if(child.getName().contains("spmsg")){
+						train(child,"S");
+					}else{
+						train(child,"H");
+					}
+				}
+			}
+		}
+		//if((new File("../corpus-mails/corpus/TrainFiles")).listFiles()!=null){
+			for(File f: (new File(dots + "/corpus-mails/corpus/TrainFiles")).listFiles()){
+				if(f.getName().contains("spmsg")){
+					train(f,"S");
+				}
+				else{
+					train(f,"H");
+				}
+			}
+		//}
+	}
+	public String getCurrentClassName(){
+		return currentCategorie;
+	}
+
+	public void startBlogs() {
+		createCategorie("blogs", new String[] { "F", "M" });
+		selectCurrentClass("blogs");
+		categories.get("blogs").get(0).setFileName("F");
+		categories.get("blogs").get(1).setFileName("M");
+		for(File f: (new File(dots + "/blogs/M")).listFiles()){
+			if(f.getName().contains("train")){
+				train(f,"M");
+			}
+		}
+		for(File f: (new File(dots + "/blogs/F")).listFiles()){
+			if(f.getName().contains("train")){
+				train(f,"F");
+			}
+		}
+		for(File f: (new File(dots + "/blogs/TrainFiles")).listFiles()){
+			if(f.getName().contains("F")){
+				train(f,"F");
+			}
+			else{
+				train(f,"M");
+			}
+		}
+	}
+	public static void main(String[] args) {
+		int succeeds = 0;
+		int f = 0;
+		String dots = Constants.DOTS; //can be 1 dot or 2 dots depending on your system.
+
+		Classifier c = new Classifier();
+		c.startBlogs();
+		System.out.println(c.getClass("F").getTotal());
+		System.out.println(c.getClass("M").getTotal());
+		for (int i = 1; i < 50; i++) {
+			System.out.print("Testing test" + i);
+			if(new File(dots + "/blogs/F/F-test" + i
+					+ ".txt").exists()){
+				System.out.print(" (F)\n");
+				boolean succeeded = (c.classify(new File(dots + "/blogs/F/F-test" + i
+						+ ".txt"))).equals("F");
+				if(succeeded){
+					succeeds++;
+					f++;
+				}
+				System.out.println(succeeded);
+			}else{
+				System.out.print(" (M)\n");
+				boolean succeeded = c.classify(
+						new File(dots + "/blogs/M/M-test" + i + ".txt"))
+						.equals("M");
+				if(succeeded){
+					succeeds++;
+				}
+				System.out.println(succeeded);
+			}
+		}
+		//System.out.println(c.classify(new File(dots + "/blogs/F/F-test2.txt")));
+		System.out.println(c.classify(new File(dots + "/blogs/test.txt")));
+		System.out.println("Succeeds: " + succeeds + " of 49, of which " + f + " were f");
+	}
+
+}

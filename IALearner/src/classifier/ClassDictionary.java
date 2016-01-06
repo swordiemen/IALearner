@@ -1,6 +1,8 @@
 package classifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +76,7 @@ public class ClassDictionary implements Constants {
 		double prob = 0;
 		if(!word.equals("")){
 			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
+			int total = 0;
 			prob = (double) (occurrence + smoothing) / getTotal();
 			//System.out.println("Woord: " + word + " prob: " + prob);
 		}
@@ -92,26 +95,38 @@ public class ClassDictionary implements Constants {
 	public double probSentence(List<String> words){
 		boolean test = false;
 		if(words.contains("testestest")){
-			test = true;
+			//test = true;
 			System.out.println(getClassName());
 		}
 		double prob = 1;
 		for(String word : words){
 			double prior = prob(word);
-			double likelihood = likelihood(word);
+			//double likelihood = likelihood(word);
 			if(test){
 				System.out.println("prior of " + word + ": " + prior);
-				System.out.println("likelihood of " + word + ": " + likelihood);
+				//System.out.println("likelihood of " + word + ": " + likelihood);
 			}
-			prob += prior + likelihood;
+			prob += prior /**+ likelihood*/;
 		}
+		int total = 0;
+		for(String s : dict.keySet()){
+			total += dict.get(s);
+		}
+		System.out.println(total);
+		System.out.println(getTotal());
 		return prob; 
 	}
 
 	public String getFileName(){
 		return filename;
 	}
-
+	public void printTopTen(){
+		List<Integer> values = new ArrayList<Integer>(dict.values()); 
+		Collections.sort(values); 
+		for(int i = values.size()-1; i > values.size()-10; i--){
+			System.out.println(values.get(i));
+		}
+	}
 	public String getClassName() {
 		return className;
 	}

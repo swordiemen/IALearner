@@ -1,0 +1,148 @@
+package classifier;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class ClassDictionary implements Constants {
+	private String className;
+	private HashMap<String, Integer> dict;
+	private int totalLength;
+	private final int smoothing = 1; //laplace
+	private String filename;
+
+	public ClassDictionary(String name, String filenameArg){
+		setClassName(name);
+		filename = filenameArg;
+		dict = new HashMap<String, Integer>();
+	}
+	public ClassDictionary(String name){
+		setClassName(name);
+		dict = new HashMap<String, Integer>();
+	}
+
+	public int getTotal(){
+		return totalLength;
+	}
+
+	public void incTotal(){
+		totalLength++;
+	}
+
+	public void insert(List<String> words){
+		for(String word : words){
+			if(dict.containsKey(word)){
+				dict.put(word, dict.get(word) + 1); 
+			}else{
+				dict.put(word, 1);
+			}
+			incTotal();
+		}
+	}
+	
+	public void insert(Set<String> words){
+		for(String word : words){
+			if(dict.containsKey(word)){
+				dict.put(word, dict.get(word) + 1); 
+			}else{
+				dict.put(word, 1);
+			}
+
+			incTotal();
+		}
+	}
+	
+	public void insert(String word) {
+		if(dict.containsKey(word)){
+			dict.put(word, dict.get(word) + 1);
+		}else{
+			dict.put(word, 1);
+		}
+	}
+	public void setFileName(String name){
+		filename = name;
+	}
+
+	/**
+	 * Calculates the prior probability of a word occurring in this class (category)
+	 * @param word Word the probability should be calculated of.
+	 * @return The prior probability of the word occurrence.
+	 */
+	public double prob(String word){
+		double prob = 0;
+		if(!word.equals("")){
+			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
+			prob = (double) (occurrence + smoothing) / getTotal();
+			//System.out.println("Woord: " + word + " prob: " + prob);
+		}
+		return Math.log(prob)/Math.log(2);
+	}
+	
+	public double likelihood(String word){
+		double prob = 0;
+		if(!word.equals("")){
+			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
+			prob = (double) (occurrence + smoothing) / (getTotal() + getDict().size());
+		}
+		return Math.log(prob)/Math.log(2);
+	}
+
+	public double probSentence(List<String> words){
+		boolean test = false;
+		if(words.contains("testestest")){
+			//test = true;
+			System.out.println(getClassName());
+		}
+		double prob = 1;
+		for(String word : words){
+			double prior = prob(word);
+			//double likelihood = likelihood(word);
+			if(test){
+				System.out.println("prior of " + word + ": " + prior);
+				System.out.println("likelihood of " + word + ": " + likelihood);
+			}
+			prob += prior /**+ likelihood*/;
+		}
+		return prob; 
+	}
+
+	public String getFileName(){
+		return filename;
+	}
+
+	public String getClassName() {
+		return className;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+	public HashMap<String, Integer> getDict(){
+		return dict;
+	}
+	
+	public void setDict(HashMap<String, Integer> argDict){
+		dict = argDict;
+	}
+	
+	public void setTotal(int argTotal){
+		totalLength = argTotal;
+	}
+	
+	/**
+	 * Creates a deep copy of a given map.
+	 * @param map The map that gets copied
+	 * @return A deep copy of <code>map</code>
+	 */
+	public <K, V> HashMap<K, V> deepCopy(HashMap<K, V> map){
+		HashMap<K, V> resultMap = new HashMap<K, V>();
+		for(K k : map.keySet()){
+			resultMap.put(k, map.get(k));
+		}
+		return resultMap;
+	}
+
+
+}

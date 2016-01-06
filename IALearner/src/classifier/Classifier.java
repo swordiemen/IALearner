@@ -100,12 +100,15 @@ public class Classifier implements Constants {
 		selectCurrentClass("blogs");
 		categories.get("blogs").get(0).setFileName("F");
 		categories.get("blogs").get(1).setFileName("M");
-		for (int i = 1; i < 600; i++) {
-			if (new File("./blogs/F/F-train" + i + ".txt").exists()) {
-				train(new File(dots + "/blogs/F/F-train" + i + ".txt"), "F");
-			} else {
-				train(new File(dots + "/blogs/M/M-train" + i + ".txt"), "M");
-			}
+		for(File f: (new File(dots + "/blogs/M")).listFiles()){
+			//if(f.getName().contains("train")){
+				train(f,"M");
+			//}
+		}
+		for(File f: (new File(dots + "/blogs/F")).listFiles()){
+			//if(f.getName().contains("train")){
+				train(f,"F");
+			//}
 		}
 		for(File f: (new File(dots + "/blogs/TrainFiles")).listFiles()){
 			if(f.getName().contains("F")){
@@ -114,6 +117,9 @@ public class Classifier implements Constants {
 			else{
 				train(f,"M");
 			}
+		}
+		for(ClassDictionary cDic: categories.get("blogs")){
+			cDic.printTopTen();
 		}
 	}
 	public static void main(String[] args) {
