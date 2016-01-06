@@ -8,8 +8,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Tokenizer {
+import classifier.Constants;
+
+public class Tokenizer implements Constants {
 	private List<String> stopwords;
+	private final String dots = DOTS;
 
 	public Tokenizer(){
 		stopwords = new ArrayList<String>();
@@ -21,12 +24,12 @@ public class Tokenizer {
 		BufferedReader br;
 		// https://code.google.com/p/stop-words/
 		String[] files = {
-				"../IALearner/src/classifier/stopwords/stop-words_english_1_en.txt",
-				"../IALearner/src/classifier/stopwords/stop-words_english_2_en.txt",
-				"../IALearner/src/classifier/stopwords/stop-words_english_3_en.txt",
-				"../IALearner/src/classifier/stopwords/stop-words_english_4_en.txt",
-				"../IALearner/src/classifier/stopwords/stop-words_english_5_en.txt",
-				"../IALearner/src/classifier/stopwords/stop-words_english_6_en.txt"
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_1_en.txt",
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_2_en.txt",
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_3_en.txt",
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_4_en.txt",
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_5_en.txt",
+				dots + "/IALearner/src/classifier/stopwords/stop-words_english_6_en.txt"
 		};
 		try {
 			for(int i = 0; i < files.length; i++){

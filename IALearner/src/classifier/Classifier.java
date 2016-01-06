@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Classifier {
+public class Classifier implements Constants {
 	private HashMap<String, List<ClassDictionary>> categories;
 	private String currentCategorie;
 	private Tokenizer tokenizer;
-	private String punten = ".."; //can be 1 dot or 2 dots depending on your system.
+	private String dots = DOTS; //can be 1 dot or 2 dots depending on your system.
 
 	public Classifier() {
 		tokenizer = new Tokenizer();
@@ -68,7 +68,7 @@ public class Classifier {
 		categories.get("mails").get(0).setFileName("spmsg");
 		selectCurrentClass("mails");
 		for(int i = 1; i < 11; i++){
-			File dir = new File(punten + "/corpus-mails/corpus/part" + i);
+			File dir = new File(dots + "/corpus-mails/corpus/part" + i);
 			File[] directoryListing = dir.listFiles();
 			if (directoryListing != null) {
 				for (File child : directoryListing) {
@@ -81,7 +81,7 @@ public class Classifier {
 			}
 		}
 		//if((new File("../corpus-mails/corpus/TrainFiles")).listFiles()!=null){
-			for(File f: (new File(punten + "/corpus-mails/corpus/TrainFiles")).listFiles()){
+			for(File f: (new File(dots + "/corpus-mails/corpus/TrainFiles")).listFiles()){
 				if(f.getName().contains("spmsg")){
 					train(f,"S");
 				}
@@ -102,12 +102,12 @@ public class Classifier {
 		categories.get("blogs").get(1).setFileName("M");
 		for (int i = 1; i < 600; i++) {
 			if (new File("./blogs/F/F-train" + i + ".txt").exists()) {
-				train(new File(punten + "/blogs/F/F-train" + i + ".txt"), "F");
+				train(new File(dots + "/blogs/F/F-train" + i + ".txt"), "F");
 			} else {
-				train(new File(punten + "/blogs/M/M-train" + i + ".txt"), "M");
+				train(new File(dots + "/blogs/M/M-train" + i + ".txt"), "M");
 			}
 		}
-		for(File f: (new File(punten + "/blogs/TrainFiles")).listFiles()){
+		for(File f: (new File(dots + "/blogs/TrainFiles")).listFiles()){
 			if(f.getName().contains("F")){
 				train(f,"F");
 			}
@@ -119,18 +119,18 @@ public class Classifier {
 	public static void main(String[] args) {
 		int succeeds = 0;
 		int f = 0;
-		String punten = "."; //can be 1 dot or 2 dots depending on your system.
+		String dots = Constants.DOTS; //can be 1 dot or 2 dots depending on your system.
 
 		Classifier c = new Classifier();
-
+		c.startBlogs();
 		System.out.println(c.getClass("F").getTotal());
 		System.out.println(c.getClass("M").getTotal());
 		for (int i = 1; i < 50; i++) {
 			System.out.print("Testing test" + i);
-			if(new File(punten + "/blogs/F/F-test" + i
+			if(new File(dots + "/blogs/F/F-test" + i
 					+ ".txt").exists()){
 				System.out.print(" (F)\n");
-				boolean succeeded = (c.classify(new File(punten + "/blogs/F/F-test" + i
+				boolean succeeded = (c.classify(new File(dots + "/blogs/F/F-test" + i
 						+ ".txt"))).equals("F");
 				if(succeeded){
 					succeeds++;
@@ -140,7 +140,7 @@ public class Classifier {
 			}else{
 				System.out.print(" (M)\n");
 				boolean succeeded = c.classify(
-						new File(punten + "/blogs/M/M-test" + i + ".txt"))
+						new File(dots + "/blogs/M/M-test" + i + ".txt"))
 						.equals("M");
 				if(succeeded){
 					succeeds++;
@@ -148,7 +148,8 @@ public class Classifier {
 				System.out.println(succeeded);
 			}
 		}
-		//System.out.println(c.classify(new File(punten + "/blogs/F/F-test2.txt")));
+		//System.out.println(c.classify(new File(dots + "/blogs/F/F-test2.txt")));
+		System.out.println(c.classify(new File(dots + "/blogs/test.txt")));
 		System.out.println("Succeeds: " + succeeds + " of 49, of which " + f + " were f");
 	}
 

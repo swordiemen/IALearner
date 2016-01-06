@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import javax.swing.*;
 import javax.swing.plaf.FileChooserUI;
 
-public class ClassifierGUI extends JFrame {
+public class ClassifierGUI extends JFrame implements Constants {
 	final JFileChooser fc = new JFileChooser();
 	private JButton button1;
 	private JButton button2;
@@ -25,7 +25,7 @@ public class ClassifierGUI extends JFrame {
 	private JPanel buttons;
 	private JLabel[] labels = new JLabel[3];
 	private Classifier classifier = new Classifier();
-	private final String dots = "..";
+	private final String dots = DOTS;
 	private boolean FileSelected = false;
 
 	public ClassifierGUI() {
@@ -160,7 +160,7 @@ public class ClassifierGUI extends JFrame {
 									StandardCharsets.UTF_8));
 					writer.close();
 				} else {
-					System.out.println("error");
+					System.err.println("Error: File name is empty.");
 				}
 			}
 		} catch (IOException e) {

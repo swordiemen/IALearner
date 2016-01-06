@@ -6,11 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class ClassDictionary {
+public class ClassDictionary implements Constants {
 	private String className;
 	private HashMap<String, Integer> dict;
 	private int totalLength;
-	private final int smoothing = 1;
+	private final int smoothing = 1; //laplace
 	private String filename;
 
 	public ClassDictionary(String name, String filenameArg){
@@ -38,7 +38,6 @@ public class ClassDictionary {
 			}else{
 				dict.put(word, 1);
 			}
-
 			incTotal();
 		}
 	}
@@ -66,32 +65,47 @@ public class ClassDictionary {
 		filename = name;
 	}
 
+	/**
+	 * Calculates the prior probability of a word occurring in this class (category)
+	 * @param word Word the probability should be calculated of.
+	 * @return The prior probability of the word occurrence.
+	 */
 	public double prob(String word){
 		double prob = 0;
 		if(!word.equals("")){
 			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
-			prob = (double) (occurrence + smoothing) / (getTotal() + dict.size() * smoothing);
+			prob = (double) (occurrence + smoothing) / getTotal();
 			//System.out.println("Woord: " + word + " prob: " + prob);
 		}
-		return /*Math.log(prob) / Math.log(2);*/prob;
+		return Math.log(prob)/Math.log(2);
+	}
+	
+	public double likelihood(String word){
+		double prob = 0;
+		if(!word.equals("")){
+			int occurrence = dict.containsKey(word) ? dict.get(word) : 0;
+			prob = (double) (occurrence + smoothing) / (getTotal() + getDict().size());
+		}
+		return Math.log(prob)/Math.log(2);
 	}
 
-	public double probSentence(List<String> argWords){
-		HashSet<String> words = new HashSet<String>(argWords);
-		HashMap<String, Integer> oldDict = deepCopy(getDict());
-		int oldTotal = getTotal();
-		double prob = 0;
-		//System.out.println(words.size());
-		for(String word : words){
-//			prob += Math.log(prob(word))/Math.log(2);
-			double logProb = Math.log(prob(word))/Math.log(2);
-			insert(words);
-			double power = prob(word);
-			setDict(oldDict);
-			setTotal(oldTotal);
-			prob += logProb + power;
+	public double probSentence(List<String> words){
+		boolean test = false;
+		if(words.contains("testestest")){
+			test = true;
+			System.out.println(getClassName());
 		}
-		return prob;
+		double prob = 1;
+		for(String word : words){
+			double prior = prob(word);
+			double likelihood = likelihood(word);
+			if(test){
+				System.out.println("prior of " + word + ": " + prior);
+				System.out.println("likelihood of " + word + ": " + likelihood);
+			}
+			prob += prior + likelihood;
+		}
+		return prob; 
 	}
 
 	public String getFileName(){
